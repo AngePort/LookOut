@@ -126,36 +126,130 @@ const HomePage: React.FC<HomePageProps> = ({ userLocation, locationError }) => {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: theme.bg, transition: 'background-color 0.3s ease' }}>
       <header style={{
-        background: theme.headerGradient,
+        background: darkMode 
+          ? 'linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f3460 100%)' 
+          : 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd23f 100%)',
         color: 'white',
-        padding: '24px 20px',
-        boxShadow: darkMode ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(139, 92, 246, 0.2)',
+        padding: '32px 20px',
+        boxShadow: darkMode 
+          ? '0 8px 32px rgba(255, 0, 128, 0.3), 0 0 60px rgba(138, 43, 226, 0.2)' 
+          : '0 8px 32px rgba(255, 107, 53, 0.4), 0 0 60px rgba(255, 210, 63, 0.3)',
+        borderBottom: darkMode ? '4px solid #ff0080' : '4px solid #ff6b35',
+        position: 'relative',
+        overflow: 'hidden',
       }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {/* Retro pattern overlay */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: darkMode ? 0.1 : 0.15,
+          background: darkMode 
+            ? 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 0, 128, 0.3) 2px, rgba(255, 0, 128, 0.3) 4px)'
+            : 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.1) 10px, rgba(255, 255, 255, 0.1) 20px)',
+          pointerEvents: 'none',
+        }}></div>
+
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
           <div>
-            <h1 style={{ margin: '0', fontSize: '32px', fontWeight: '800', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>👁️ LookOut</h1>
-            <p style={{ margin: '8px 0 0 0', fontSize: '15px', opacity: 0.95 }}>
-              Discover amazing events happening near you
+            <h1 style={{ 
+              margin: '0', 
+              fontSize: '56px', 
+              fontWeight: '900',
+              fontFamily: '"Arial Black", "Arial Bold", Gadget, sans-serif',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              textShadow: darkMode 
+                ? `
+                  3px 3px 0px #ff0080,
+                  6px 6px 0px #ff00ff,
+                  9px 9px 0px #8a2be2,
+                  12px 12px 20px rgba(138, 43, 226, 0.6),
+                  0 0 40px rgba(255, 0, 128, 0.8),
+                  0 0 80px rgba(255, 0, 255, 0.6)
+                `
+                : `
+                  3px 3px 0px #d45d00,
+                  6px 6px 0px #8b3a00,
+                  9px 9px 0px #5a2400,
+                  12px 12px 20px rgba(139, 58, 0, 0.5),
+                  0 0 30px rgba(255, 210, 63, 0.8)
+                `,
+              transform: 'skew(-2deg)',
+              display: 'inline-block',
+              background: darkMode
+                ? 'linear-gradient(180deg, #fff 0%, #ff00ff 50%, #8a2be2 100%)'
+                : 'linear-gradient(180deg, #fff 0%, #ffd700 50%, #ff6b35 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              animation: darkMode ? 'retroPulse 2s ease-in-out infinite' : 'none',
+            }}>
+              👁️ LOOKOUT
+            </h1>
+            <p style={{ 
+              margin: '12px 0 0 0', 
+              fontSize: '18px', 
+              opacity: 0.95,
+              fontWeight: '700',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              fontFamily: 'monospace',
+              textShadow: darkMode 
+                ? '2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 0, 128, 0.5)'
+                : '2px 2px 4px rgba(0, 0, 0, 0.3)',
+              transform: 'skew(-1deg)',
+            }}>
+              ⚡ Discover rad events near you ⚡
             </p>
           </div>
           <button
             onClick={() => setDarkMode(!darkMode)}
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: '12px',
-              padding: '10px 16px',
+              background: darkMode 
+                ? 'linear-gradient(135deg, #ff0080 0%, #ff00ff 100%)'
+                : 'linear-gradient(135deg, #ffd23f 0%, #ff6b35 100%)',
+              border: darkMode ? '3px solid #ff00ff' : '3px solid #ff6b35',
+              borderRadius: '50%',
+              width: '60px',
+              height: '60px',
               cursor: 'pointer',
-              fontSize: '20px',
+              fontSize: '24px',
               transition: 'all 0.3s ease',
-              backdropFilter: 'blur(10px)',
+              boxShadow: darkMode 
+                ? '0 0 20px rgba(255, 0, 255, 0.6), 0 4px 15px rgba(0, 0, 0, 0.5)'
+                : '0 0 20px rgba(255, 210, 63, 0.6), 0 4px 15px rgba(0, 0, 0, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transform: 'rotate(0deg)',
             }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'rotate(180deg) scale(1.1)'
+              e.currentTarget.style.boxShadow = darkMode 
+                ? '0 0 40px rgba(255, 0, 255, 1), 0 8px 20px rgba(0, 0, 0, 0.6)'
+                : '0 0 40px rgba(255, 210, 63, 1), 0 8px 20px rgba(0, 0, 0, 0.4)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'rotate(0deg) scale(1)'
+              e.currentTarget.style.boxShadow = darkMode 
+                ? '0 0 20px rgba(255, 0, 255, 0.6), 0 4px 15px rgba(0, 0, 0, 0.5)'
+                : '0 0 20px rgba(255, 210, 63, 0.6), 0 4px 15px rgba(0, 0, 0, 0.3)'
+            }}
           >
             {darkMode ? '☀️' : '🌙'}
           </button>
         </div>
+
+        {/* Add keyframe animation for dark mode pulse */}
+        <style>{`
+          @keyframes retroPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+          }
+        `}</style>
       </header>
 
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
