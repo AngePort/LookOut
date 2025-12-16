@@ -79,7 +79,9 @@ const EventDetailPage: React.FC = () => {
     )
   }
 
-  const imageUrl = event.images?.[0]?.url || 'https://via.placeholder.com/800x400?text=No+Image'
+  // Use imageUrl field from backend (already normalized) or fall back to images array
+  const imageUrl = event.imageUrl || event.images?.[0]?.url || 'https://via.placeholder.com/800x400?text=No+Image'
+  const eventName = event.title || event.name
   const formattedDate = format(new Date(event.startDate), 'EEEE, MMMM d, yyyy')
   const formattedTime = format(new Date(event.startDate), 'h:mm a')
 
@@ -118,12 +120,16 @@ const EventDetailPage: React.FC = () => {
         }}>
           <img
             src={imageUrl}
-            alt={event.name}
+            alt={eventName}
             style={{ width: '100%', height: '400px', objectFit: 'cover' }}
+            onError={(e) => {
+              // Fallback if image fails to load
+              e.currentTarget.src = 'https://via.placeholder.com/800x400?text=Event+Image+Unavailable'
+            }}
           />
 
           <div style={{ padding: '32px' }}>
-            <h1 style={{ margin: '0 0 16px 0', fontSize: '32px' }}>{event.name}</h1>
+            <h1 style={{ margin: '0 0 16px 0', fontSize: '32px' }}>{eventName}</h1>
 
             <div style={{ display: 'grid', gap: '16px', marginBottom: '32px' }}>
               <div>
@@ -192,41 +198,43 @@ const EventDetailPage: React.FC = () => {
               </a>
             )}
 
-            <div>
-              <h3 style={{ margin: '0 0 16px 0', fontSize: '20px' }}>Location</h3>
-              <div style={{ height: '400px', borderRadius: '8px', overflow: 'hidden' }}>
-                <MapContainer
-                  center={[event.venue.location.lat, event.venue.location.lng]}
-                  zoom={15}
-                  style={{ width: '100%', height: '100%' }}
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <Marker
-                    position={[event.venue.location.lat, event.venue.location.lng]}
-                    icon={eventIcon}
+            {event.venue.location && (
+              <div>
+                <h3 style={{ margin: '0 0 16px 0', fontSize: '20px' }}>Location</h3>
+                <div style={{ height: '400px', borderRadius: '8px', overflow: 'hidden' }}>
+                  <MapContainer
+                    center={[event.venue.location.lat, event.venue.location.lng]}
+                    zoom={15}
+                    style={{ width: '100%', height: '100%' }}
                   >
-                    <Popup>{event.venue.name}</Popup>
-                  </Marker>
-                </MapContainer>
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker
+                      position={[event.venue.location.lat, event.venue.location.lng]}
+                      icon={eventIcon}
+                    >
+                      <Popup>{event.venue.name}</Popup>
+                    </Marker>
+                  </MapContainer>
+                </div>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${event.venue.location.lat},${event.venue.location.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block',
+                    marginTop: '16px',
+                    color: '#007bff',
+                    textDecoration: 'none',
+                    fontSize: '16px',
+                  }}
+                >
+                  Get Directions →
+                </a>
               </div>
-              <a
-                href={`https://www.google.com/maps/dir/?api=1&destination=${event.venue.location.lat},${event.venue.location.lng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-block',
-                  marginTop: '16px',
-                  color: '#007bff',
-                  textDecoration: 'none',
-                  fontSize: '16px',
-                }}
-              >
-                Get Directions →
-              </a>
-            </div>
+            )}
           </div>
         </div>
       </main>
