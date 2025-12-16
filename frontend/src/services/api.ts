@@ -23,7 +23,22 @@ export const api = {
 
   getEventById: async (id: string): Promise<Event | null> => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/events/${id}`)
+      // Extract source from ID (format: tm-12345 or eb-12345 or osm-12345)
+      let source = 'ticketmaster'
+      let actualId = id
+
+      if (id.startsWith('tm-')) {
+        source = 'ticketmaster'
+        actualId = id.substring(3)
+      } else if (id.startsWith('eb-')) {
+        source = 'eventbrite'
+        actualId = id.substring(3)
+      } else if (id.startsWith('osm-')) {
+        source = 'openstreetmap'
+        actualId = id.substring(4)
+      }
+
+      const response = await axios.get(`${API_BASE_URL}/events/${source}/${actualId}`)
       return response.data.event || null
     } catch (error) {
       console.error('Error fetching event:', error)

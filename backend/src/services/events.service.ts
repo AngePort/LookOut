@@ -8,13 +8,19 @@ import {
   getEventbriteEventById,
   EventbriteEvent,
 } from './eventbrite.service';
+import {
+  searchOSMEvents,
+  OSMEvent,
+  getOSMCategory,
+  formatOSMAddress,
+} from './openstreetmap.service';
 
 /**
  * Normalized event structure for the app
  */
 export interface NormalizedEvent {
   id: string;
-  source: 'ticketmaster' | 'eventbrite';
+  source: 'ticketmaster' | 'eventbrite' | 'openstreetmap';
   title: string;
   description?: string;
   url: string;
@@ -119,6 +125,47 @@ function normalizeEventbriteEvent(event: EventbriteEvent): NormalizedEvent {
   };
 }
 
+/**
+ * Normalize OpenStreetMap venue to common format
+ * Note: OSM provides venues/locations, not time-based events
+ * We create "ongoing" events for these venues
+ */
+function normalizeOSMEvent(element: OSMEvent): NormalizedEvent {
+  const latitude = element.lat || element.center?.lat;
+  const longitude = element.lon || element.center?.lon;
+  const tags = element.tags;
+
+  // Create a date far in the future to indicate "ongoing/always available"
+  const ongoingDate = new Date();
+  ongoingDate.setFullYear(ongoingDate.getFullYear() + 10);
+
+  return {
+    id: `osm-${element.type}-${element.id}`,
+    source: 'openstreetmap',
+    title: tags.name || 'Local Venue',
+    description: tags.description || tags.opening_hours || 'Community venue or facility',
+    url: tags.website || tags['contact:website'] || `https://www.openstreetmap.org/${element.type}/${element.id}`,
+    imageUrl: undefined, // OSM doesn't provide images
+    startDate: new Date().toISOString(), // Available now
+    endDate: ongoingDate.toISOString(), // Ongoing
+    venue: {
+      name: tags.name || 'Local Venue',
+      address: formatOSMAddress(tags),
+      city: tags['addr:city'],
+      state: tags['addr:state'],
+      latitude,
+      longitude,
+      location: latitude !== undefined && longitude !== undefined ? {
+        lat: latitude,
+        lng: longitude,
+      } : undefined,
+    },
+    category: getOSMCategory(tags),
+    isFree: true, // Most OSM venues are free to visit
+    priceRange: undefined,
+  };
+}
+
 export interface EventSearchParams {
   latitude?: number;
   longitude?: number;
@@ -144,7 +191,7 @@ export async function searchAllEvents(
   params: EventSearchParams
 ): Promise<{ events: NormalizedEvent[]; totalResults: number }> {
   try {
-    // Fetch from Ticketmaster only (Eventbrite disabled)
+    // Fetch from Ticketmaster only (Eventbrite and OSM disabled)
     const [ticketmasterResults] = await Promise.allSettled([
       searchTicketmasterEvents({
         latitude: params.latitude,
@@ -181,6 +228,17 @@ export async function searchAllEvents(
       console.error('Ticketmaster search failed:', ticketmasterResults.reason);
       throw new Error('Failed to fetch events from Ticketmaster');
     }
+
+    // DISABLED: OpenStreetMap venues (not time-based events)
+    // Keeping code for future reference, but not adding to results
+    // if (osmResults.status === 'fulfilled') {
+    //   const normalized = osmResults.value.events.map(normalizeOSMEvent);
+    //   allEvents.push(...normalized);
+    //   console.log(`Found ${normalized.length} OpenStreetMap venues`);
+    // } else {
+    //   console.error('OpenStreetMap search failed:', osmResults.reason);
+    //   // Don't throw - OSM is supplementary
+    // }
 
     // EVENTBRITE DISABLED - Uncomment to re-enable
     // if (eventbriteResults.status === 'fulfilled') {

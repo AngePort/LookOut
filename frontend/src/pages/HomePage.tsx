@@ -319,6 +319,35 @@ const HomePage: React.FC<HomePageProps> = ({ userLocation, locationError }) => {
                 />
               ))}
             </div>
+
+            {/* End of results message */}
+            <div style={{
+              marginTop: '40px',
+              padding: '24px',
+              textAlign: 'center',
+              backgroundColor: darkMode ? 'rgba(255, 0, 128, 0.15)' : 'rgba(255, 210, 63, 0.2)',
+              borderRadius: '16px',
+              border: darkMode ? '2px dashed #ff0080' : '2px dashed #ff6b35',
+            }}>
+              <p style={{
+                margin: '0 0 8px 0',
+                fontSize: '20px',
+                fontWeight: '900',
+                color: theme.text,
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}>
+                🎯 End of {currentRadius} Mile Radius
+              </p>
+              <p style={{
+                margin: 0,
+                fontSize: '15px',
+                color: theme.textSecondary,
+                fontWeight: '600',
+              }}>
+                Increase radius or adjust filters to discover more events
+              </p>
+            </div>
           </>
         )}
       </main>
