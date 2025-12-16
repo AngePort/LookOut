@@ -201,6 +201,182 @@ When you click a cube, navigate to:
 
 **CRITICAL RULE**: After completing each phase, we MUST test and validate before moving forward. This prevents bugs from compounding and makes debugging easier.
 
+## 🤖 AUTOMATION PROTOCOL FOR AI AGENTS
+
+**MANDATORY REQUIREMENT: Before completing ANY automation task or marking work as "done", you MUST run the application and verify everything works.**
+
+### Step 1: Always Run the Full Application
+
+```bash
+# Terminal 1: Start Backend (required)
+cd backend
+npm run dev
+# Should start on http://127.0.0.1:3001
+
+# Terminal 2: Start Frontend (required)
+cd frontend
+npm run dev
+# Should start on http://localhost:3000
+```
+
+### Step 2: Verify Application is Fully Functional
+
+**Required Checks (ALL must pass):**
+- ✅ Backend starts without errors
+- ✅ Frontend starts without errors
+- ✅ Homepage loads at http://localhost:3000
+- ✅ Browser console shows NO errors (F12 → Console)
+- ✅ Events load and display on the page
+- ✅ Search filters work correctly
+- ✅ Radius slider updates events
+- ✅ Event cards are clickable
+- ✅ Event detail pages load with full information
+- ✅ NO "Failed to load events" errors
+- ✅ End-of-radius message displays after events
+
+### Step 3: Test Critical User Flows
+
+**Flow 1: Event Discovery**
+1. User opens app → sees events
+2. User changes radius → sees updated events
+3. User clicks event card → sees full details
+4. User clicks back → returns to event list
+**Result:** ✅ Must work smoothly
+
+**Flow 2: Search & Filter**
+1. User enters keyword → events filter
+2. User selects category → results update
+3. User adjusts radius → distance changes
+**Result:** ✅ Must work correctly
+
+### Step 4: Iterative Bug Fixing (REQUIRED)
+
+**If you encounter ANY errors:**
+
+❌ **DO NOT** say "Task complete" with errors present
+❌ **DO NOT** stop work when the app is broken
+❌ **DO NOT** leave issues for the user to fix
+
+✅ **DO** read the error message carefully
+✅ **DO** identify the root cause (missing imports, wrong endpoints, type errors, API issues, etc.)
+✅ **DO** fix the error systematically
+✅ **DO** restart the affected server
+✅ **DO** test again to verify the fix
+✅ **DO** repeat until NO errors exist
+
+**Common Errors & Fixes:**
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `Failed to load events` | API endpoint mismatch or backend down | Check API URL in frontend/.env, restart backend |
+| `CORS error` | Backend not allowing frontend origin | Verify CORS settings in backend/src/server.ts |
+| `404 Not Found` | Wrong route or missing endpoint | Check backend routes match frontend API calls |
+| `Cannot connect` | Port mismatch or server not running | Verify ports (backend:3001, frontend:3000) |
+| `Undefined variable` | Missing state or prop | Add proper initialization and error handling |
+
+### Step 5: Vision Alignment Check
+
+**The App's Vision:**
+- Users can **easily discover local events** anywhere in the world
+- **Clean, working UI** with no error messages
+- **Smooth user experience** from discovery to booking
+- **Only valid events** (sports, concerts, theater, etc.) - NO venues without dates
+- **Accurate radius filtering** - events within specified miles
+- **Every feature works** - no broken buttons or links
+
+**If the app shows ANY of these, task is NOT complete:**
+- ❌ "Failed to load events"
+- ❌ CORS errors in console
+- ❌ Blank/empty event list when events should exist
+- ❌ Clicking event cards does nothing
+- ❌ Event detail pages show errors
+- ❌ Filters don't update results
+- ❌ Radius changes don't work
+
+### Step 6: Only Mark Complete When
+
+✅ Both servers running (backend + frontend)
+✅ No errors in either terminal
+✅ No errors in browser console
+✅ Events load successfully from Ticketmaster API
+✅ All features work as designed
+✅ User can complete full journey: view events → click event → see details → get tickets
+✅ Radius filtering works accurately
+✅ End-of-radius message displays
+✅ App matches the vision above
+
+### Example of CORRECT Automation Behavior
+
+```
+Agent: "Starting implementation of event filtering..."
+Agent: "Code written. Now testing..."
+Agent: "Running backend... ✓ Started on port 3001"
+Agent: "Running frontend... ✓ Started on port 3000"
+Agent: "Opening browser... ✓ Page loads"
+Agent: "Testing event load... ERROR: 'Failed to load events'"
+Agent: "Investigating... Found issue: frontend .env has wrong port"
+Agent: "Fixing: Updated VITE_API_URL from localhost:5000 to 127.0.0.1:3001"
+Agent: "Restarting frontend... ✓ Vite reloaded"
+Agent: "Testing again... ✓ Events loading successfully (20 events)"
+Agent: "Testing filters... ✓ Radius changes update results"
+Agent: "Testing event click... ✓ Detail page opens"
+Agent: "Testing back button... ✓ Returns to list"
+Agent: "All checks passed. Task complete."
+```
+
+### Example of INCORRECT Automation Behavior
+
+```
+Agent: "Code written. Task complete!" ❌
+[App broken, shows errors, but agent stops working]
+```
+
+**This is UNACCEPTABLE. Always verify the app works before stopping.**
+
+### Automated Testing Checklist
+
+Before marking ANY task complete, go through this checklist:
+
+**Server Status:**
+- [ ] Backend running on port 3001 without errors
+- [ ] Frontend running on port 3000 without errors
+- [ ] Can curl http://127.0.0.1:3001/health and get {"status":"ok"}
+- [ ] Can open http://localhost:3000 in browser
+
+**API Functionality:**
+- [ ] `/api/events/nearby` returns events
+- [ ] Events have proper structure (id, title, venue, date)
+- [ ] No CORS errors in browser console
+- [ ] Event detail endpoint works (/api/events/ticketmaster/:id)
+
+**Frontend Functionality:**
+- [ ] Homepage displays without console errors
+- [ ] Events render as cards with images
+- [ ] Clicking event card navigates to detail page
+- [ ] Detail page shows full event information
+- [ ] Map displays on detail page
+- [ ] Back button works
+- [ ] Dark mode toggle works
+
+**User Features:**
+- [ ] Search filters modify results
+- [ ] Radius slider updates events (5-100 miles)
+- [ ] Category dropdown filters events
+- [ ] Keyword search finds relevant events
+- [ ] Sort options change event order
+- [ ] End-of-radius message displays
+
+**Event Quality:**
+- [ ] All events are real, time-based events (not just venues)
+- [ ] Events have dates, times, and venues
+- [ ] No random locations shown as "events"
+- [ ] Categories are accurate (Sports, Music, Arts, etc.)
+- [ ] Distance calculations are reasonable
+
+**Remember:** The goal is a **WORKING application** that users can actually use to find events. Code alone is not enough.
+
+---
+
 ### Testing & Validation Protocol (Apply to EVERY Phase)
 
 **Why This Matters:**
