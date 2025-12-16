@@ -116,14 +116,18 @@ export interface EventSearchParams {
 }
 
 /**
- * Search events from all sources (Ticketmaster + Eventbrite)
+ * Search events from all sources (Ticketmaster only - Eventbrite temporarily disabled)
+ *
+ * NOTE: Eventbrite API is currently disabled because the free tier token
+ * only provides access to user-created events, not public event search.
+ * To re-enable, uncomment the Eventbrite sections below.
  */
 export async function searchAllEvents(
   params: EventSearchParams
 ): Promise<{ events: NormalizedEvent[]; totalResults: number }> {
   try {
-    // Fetch from both APIs in parallel
-    const [ticketmasterResults, eventbriteResults] = await Promise.allSettled([
+    // Fetch from Ticketmaster only (Eventbrite disabled)
+    const [ticketmasterResults] = await Promise.allSettled([
       searchTicketmasterEvents({
         latitude: params.latitude,
         longitude: params.longitude,
@@ -136,19 +140,20 @@ export async function searchAllEvents(
         size: params.limit || 20,
         page: params.page || 0,
       }),
-      searchEventbriteEvents({
-        latitude: params.latitude,
-        longitude: params.longitude,
-        radius: params.radius ? `${params.radius}mi` : undefined,
-        city: params.city,
-        startDate: params.startDate,
-        endDate: params.endDate,
-        isFree: params.isFree,
-        page: params.page || 1,
-      }),
+      // EVENTBRITE DISABLED - Uncomment to re-enable
+      // searchEventbriteEvents({
+      //   latitude: params.latitude,
+      //   longitude: params.longitude,
+      //   radius: params.radius ? `${params.radius}mi` : undefined,
+      //   city: params.city,
+      //   startDate: params.startDate,
+      //   endDate: params.endDate,
+      //   isFree: params.isFree,
+      //   page: params.page || 1,
+      // }),
     ]);
 
-    // Normalize events from both sources
+    // Normalize events from Ticketmaster
     const allEvents: NormalizedEvent[] = [];
 
     if (ticketmasterResults.status === 'fulfilled') {
@@ -156,21 +161,23 @@ export async function searchAllEvents(
       allEvents.push(...normalized);
     } else {
       console.error('Ticketmaster search failed:', ticketmasterResults.reason);
+      throw new Error('Failed to fetch events from Ticketmaster');
     }
 
-    if (eventbriteResults.status === 'fulfilled') {
-      const normalized = eventbriteResults.value.events.map(normalizeEventbriteEvent);
-      allEvents.push(...normalized);
-    } else {
-      console.error('Eventbrite search failed:', eventbriteResults.reason);
-    }
+    // EVENTBRITE DISABLED - Uncomment to re-enable
+    // if (eventbriteResults.status === 'fulfilled') {
+    //   const normalized = eventbriteResults.value.events.map(normalizeEventbriteEvent);
+    //   allEvents.push(...normalized);
+    // } else {
+    //   console.error('Eventbrite search failed:', eventbriteResults.reason);
+    // }
 
     // Sort by date (earliest first)
     allEvents.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
 
-    const totalResults =
-      (ticketmasterResults.status === 'fulfilled' ? ticketmasterResults.value.totalResults : 0) +
-      (eventbriteResults.status === 'fulfilled' ? eventbriteResults.value.totalResults : 0);
+    const totalResults = ticketmasterResults.status === 'fulfilled'
+      ? ticketmasterResults.value.totalResults
+      : 0;
 
     return {
       events: allEvents,
@@ -191,8 +198,10 @@ export async function getEventById(source: string, eventId: string): Promise<Nor
       const event = await getTicketmasterEventById(eventId);
       return normalizeTicketmasterEvent(event);
     } else if (source === 'eventbrite' || source === 'eb') {
-      const event = await getEventbriteEventById(eventId);
-      return normalizeEventbriteEvent(event);
+      // EVENTBRITE DISABLED - Uncomment to re-enable
+      throw new Error('Eventbrite integration is temporarily disabled');
+      // const event = await getEventbriteEventById(eventId);
+      // return normalizeEventbriteEvent(event);
     } else {
       throw new Error('Invalid event source');
     }

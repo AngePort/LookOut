@@ -118,7 +118,8 @@ export async function searchEventbriteEvents(
       queryParams.page = params.page;
     }
 
-    const response = await axios.get(`${EVENTBRITE_API_BASE}/events/search/`, {
+    // Eventbrite deprecated /events/search/ - using user's events endpoint
+    const response = await axios.get(`${EVENTBRITE_API_BASE}/users/me/events/`, {
       params: queryParams,
       headers: {
         Authorization: `Bearer ${getAPIKey()}`,

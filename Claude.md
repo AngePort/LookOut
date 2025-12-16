@@ -7,8 +7,185 @@ A location-based event discovery application that helps users find local events 
 - Geolocation-based event discovery
 - Event search and filtering (category, date, distance)
 - Event details view with location mapping
-- User-friendly interface for browsing events
+- Infinite scroll grid interface for browsing events
 - Real-time location detection
+
+## Frontend Design Specifications
+
+### Home Page Layout
+**Primary View**: Infinite scrolling 5x5 grid of event cubes
+- **Grid Layout**: 5 columns × 5 rows (25 events visible at once)
+- **Responsive**: On mobile, adjusts to 2x2 or 3x3 grid based on screen size
+- **Infinite Scroll**: Automatically loads more events as user scrolls down
+- **No Map on Home Page**: Keep the home page focused on event discovery
+
+### Event Cubes Design
+Each cube should display:
+- **Event Image/Thumbnail**: Eye-catching visual (use event poster or venue image)
+- **Event Title**: Clear, readable font
+- **Event Date & Time**: Prominently displayed
+- **Event Label/Category**: Small badge/tag (e.g., "Concert", "Sports", "Theater")
+- **Hover Effect**: Subtle animation/shadow on hover to indicate clickability
+- **Clean Design**: Nice spacing, rounded corners, professional look
+
+### Filter Bar (Top of Page)
+**Default Filter**: Sorted by date (upcoming events first)
+
+**Filter Options Include**:
+- **Date Filter** (Default/Primary):
+  - Today
+  - This Week
+  - This Weekend
+  - This Month
+  - Custom Date Range
+- **Category Filter**:
+  - All Events
+  - Music/Concerts
+  - Sports
+  - Arts & Theater
+  - Food & Drink
+  - Festivals
+  - Comedy
+  - Family/Kids
+- **Distance Filter**:
+  - Within 5 miles
+  - Within 10 miles
+  - Within 25 miles
+  - Within 50 miles
+  - Custom radius
+- **Location Input**:
+  - Current location (with geolocation)
+  - Manual location search
+- **Sort Options**:
+  - Date (soonest first) - **DEFAULT**
+  - Distance (nearest first)
+  - Popularity
+  - Price (low to high)
+
+**Filter UI Design**:
+- Clean, horizontal filter bar at the top
+- Dropdown menus or toggle buttons
+- Active filters visually highlighted
+- "Clear All Filters" button
+- Responsive: Collapses to hamburger menu on mobile
+
+### Event Details Page (Click on Cube)
+When a user clicks on an event cube, show a detailed view:
+
+**Event Details to Display**:
+- **Event Title** (Large, prominent heading)
+- **Event Banner Image** (Full-width hero image)
+- **Date & Time**:
+  - Full date (e.g., "Saturday, March 15, 2025")
+  - Time with timezone (e.g., "7:00 PM EST")
+  - Duration if available
+- **Venue Information**:
+  - Venue name
+  - Full address
+  - Capacity (if available)
+- **Location Map**:
+  - Embedded map showing exact venue location
+  - Marker on the venue
+  - "Get Directions" button linking to Google Maps
+- **Pricing Information**:
+  - Price range (e.g., "$25 - $150")
+  - "Free" if applicable
+  - Link to purchase tickets
+- **Event Description**:
+  - Full description/details
+  - Event category/genre
+  - Age restrictions (if any)
+- **Additional Info**:
+  - Event organizer/artist
+  - Social media links
+  - Share button (copy link, social media)
+  - "Add to Calendar" button (.ics download)
+- **Related Events**:
+  - "Similar Events Nearby" section at bottom
+  - 3-4 related event cubes
+
+**Details Page Layout**:
+- Back button to return to grid
+- Sticky header with event title while scrolling
+- Responsive design for mobile
+- Professional, modern layout
+
+### User Experience Flow
+1. **Landing**: User sees 5x5 grid of upcoming events (date-filtered by default)
+2. **Browse**: User scrolls infinitely through events, filters as needed
+3. **Select**: User clicks on an event cube
+4. **View Details**: Full event page opens with all information including map
+5. **Take Action**: User can get tickets, directions, share, or add to calendar
+6. **Return**: User goes back to grid to continue browsing
+
+### Technical Implementation Notes
+- Use CSS Grid for the 5x5 layout
+- Implement intersection observer for infinite scroll
+- Lazy load images for performance
+- Skeleton loaders while events are loading
+- Smooth transitions between grid and detail view
+- Cache event data to minimize API calls
+
+### Visual Layout Summary
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  [Logo]  Location: [My Location ▼]  [Filters: Date▼ Category▼ Distance▼] │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐   ← 5x5 Grid of Event Cubes│
+│  │ 🎵 │ │ ⚽ │ │ 🎭 │ │ 🍔 │ │ 🎪 │   ← Each cube: Image, Title,│
+│  └────┘ └────┘ └────┘ └────┘ └────┘     Date, Category          │
+│  ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐                             │
+│  │    │ │    │ │    │ │    │ │    │                             │
+│  └────┘ └────┘ └────┘ └────┘ └────┘                             │
+│  ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐                             │
+│  │    │ │    │ │    │ │    │ │    │                             │
+│  └────┘ └────┘ └────┘ └────┘ └────┘   ← Infinite Scroll        │
+│  ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐   ← (Loads more on scroll) │
+│  │    │ │    │ │    │ │    │ │    │                             │
+│  └────┘ └────┘ └────┘ └────┘ └────┘                             │
+│  ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐                             │
+│  │    │ │    │ │    │ │    │ │    │                             │
+│  └────┘ └────┘ └────┘ └────┘ └────┘                             │
+│                                                                 │
+│  [Loading more events...]                                       │
+└─────────────────────────────────────────────────────────────────┘
+
+When you click a cube, navigate to:
+
+┌─────────────────────────────────────────────────────────────────┐
+│  [← Back to Events]                    Event Detail Page        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ══════════════════════════════════════════════════════════════ │
+│  ║          HERO IMAGE (Event Banner)                        ║ │
+│  ══════════════════════════════════════════════════════════════ │
+│                                                                 │
+│  🎵 CONCERT TITLE                                    [Share] [$]│
+│  Saturday, March 15, 2025 • 7:00 PM EST                        │
+│                                                                 │
+│  📍 Venue Name                     💰 $25 - $150               │
+│     123 Main St, City, ST                                       │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────┐       │
+│  │  🗺️  [Interactive Map with Venue Marker]           │       │
+│  │                                                     │       │
+│  │        [Get Directions →]                          │       │
+│  └─────────────────────────────────────────────────────┘       │
+│                                                                 │
+│  📝 Event Description                                           │
+│  Full details about the event, artist info, age restrictions...│
+│                                                                 │
+│  [Add to Calendar 📅]  [Buy Tickets 🎫]                        │
+│                                                                 │
+│  ─────────────────────────────────────────────────────────────  │
+│  Similar Events Nearby:                                         │
+│  ┌────┐ ┌────┐ ┌────┐ ┌────┐                                  │
+│  │    │ │    │ │    │ │    │                                  │
+│  └────┘ └────┘ └────┘ └────┘                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ## Tech Stack Recommendations
 - **Frontend**: React/Next.js or Vue.js for responsive UI
@@ -73,27 +250,26 @@ A location-based event discovery application that helps users find local events 
 - [ ] Check all environment variables are loaded correctly
 - [ ] Fix any errors before proceeding to Phase 2
 
-### Phase 2: Geolocation & Mapping Core
-**Goal**: Implement location detection and map visualization
+### Phase 2: Geolocation & Location Services
+**Goal**: Implement location detection for event discovery (NO map on home page)
 
 **Tasks:**
 - [ ] Implement browser geolocation API integration
 - [ ] Create location permission handling and fallback mechanisms
-- [ ] Integrate mapping library (Google Maps/Mapbox/Leaflet)
-- [ ] Build interactive map component with markers
-- [ ] Implement location search/autocomplete functionality
-- [ ] Add manual location selection on map
+- [ ] Implement location search/autocomplete functionality (for filter bar)
 - [ ] Create location state management (current vs selected location)
 - [ ] Implement distance calculation utilities
+- [ ] Integrate mapping library (Google Maps/Mapbox/Leaflet) for detail pages only
+- [ ] Build embedded map component for event detail pages
+- [ ] Create "Get Directions" functionality linking to Google Maps
 
 **Test & Validate Phase 2:**
 - [ ] Click "Use My Location" - should request permission and get coordinates
 - [ ] Check browser console for latitude/longitude values
-- [ ] Verify map renders on the page without errors
-- [ ] Test permission denial - should show fallback/error message
-- [ ] Try manual location search - should find and display locations
-- [ ] Click on map - should update selected location
+- [ ] Test permission denial - should show fallback/error message with manual input
+- [ ] Try manual location search in filter bar - should find and display locations
 - [ ] Verify distance calculations return correct values (test with known distances)
+- [ ] Map should NOT appear on home page (only on event detail pages)
 - [ ] Fix any errors before proceeding to Phase 3
 
 ### Phase 3: Event Data Integration
@@ -120,53 +296,80 @@ A location-based event discovery application that helps users find local events 
 - [ ] Fix any API errors, rate limits, or data formatting issues
 - [ ] Fix any errors before proceeding to Phase 4
 
-### Phase 4: Search & Discovery Features
-**Goal**: Enable users to find relevant events
+### Phase 4: Grid UI & Filtering System
+**Goal**: Build the 5x5 infinite scroll grid with comprehensive filtering
 
 **Tasks:**
-- [ ] Build search interface with location input
-- [ ] Implement category/genre filtering
-- [ ] Add date range filtering (today, this week, this month, custom)
-- [ ] Create distance/radius filter
-- [ ] Implement search results display (list/grid view)
-- [ ] Add sorting options (date, distance, popularity)
-- [ ] Create event preview cards with key information
-- [ ] Build "near me" quick search functionality
+- [ ] Build 5x5 CSS Grid layout for event cubes (responsive: 3x3 mobile, 2x2 small mobile)
+- [ ] Create event cube component with image, title, date, category badge
+- [ ] Implement infinite scroll using Intersection Observer API
+- [ ] Add skeleton loaders for loading states
+- [ ] Build filter bar component at top of page
+- [ ] Implement date filtering (Today, This Week, This Weekend, This Month, Custom) - **DEFAULT SORT**
+- [ ] Implement category/genre filtering (Music, Sports, Arts, Food, etc.)
+- [ ] Create distance/radius filter with dropdown
+- [ ] Add location input (current location + manual search)
+- [ ] Implement sorting options (Date, Distance, Popularity, Price)
+- [ ] Add "Clear All Filters" functionality
+- [ ] Create visual indicators for active filters
+- [ ] Implement filter state management
+- [ ] Add smooth hover effects and transitions on event cubes
+- [ ] Handle empty states ("No events found" message)
 
 **Test & Validate Phase 4:**
-- [ ] Enter a city name in search - should return events for that location
-- [ ] Select a category filter - results should update to show only that category
+- [ ] Page loads with 5x5 grid (25 events visible)
+- [ ] Events are sorted by date (upcoming first) by default
+- [ ] Scroll to bottom - should load next 25 events automatically (infinite scroll)
+- [ ] Select a category filter - grid should update to show only that category
 - [ ] Change date filter to "This Week" - should show only upcoming week's events
-- [ ] Adjust distance slider - should filter events by radius
-- [ ] Toggle between list/grid view - layout should change
-- [ ] Try each sort option - order should change (date, distance, etc.)
-- [ ] Click "Near Me" - should use current location and show nearby events
-- [ ] Test with no results - should show appropriate "no events found" message
+- [ ] Adjust distance filter - should show events within selected radius
+- [ ] Enter a city name - should return events for that location
+- [ ] Try each sort option - order should change (date, distance, popularity, price)
+- [ ] Click "Use My Location" - should filter to nearby events
+- [ ] Test on mobile - grid should adjust to 3x3 or 2x2 layout
+- [ ] Test with no results - should show "No events found" message
+- [ ] Hover over event cube - should show animation/shadow effect
+- [ ] Check loading skeletons appear while fetching more events
 - [ ] Fix any errors before proceeding to Phase 5
 
-### Phase 5: Event Details & User Experience
-**Goal**: Provide comprehensive event information
+### Phase 5: Event Details Page (Full Information View)
+**Goal**: Provide comprehensive event information with embedded map
 
 **Tasks:**
-- [ ] Design event detail page layout
-- [ ] Display event information (title, description, venue, time, price)
-- [ ] Show venue location on embedded map
-- [ ] Add directions/navigation links
-- [ ] Implement share functionality
-- [ ] Create "add to calendar" feature
-- [ ] Add external ticket purchase links
-- [ ] Build related events recommendations
+- [ ] Create event detail page route/component
+- [ ] Design full-width hero banner with event image
+- [ ] Display event title as large prominent heading
+- [ ] Show formatted date & time (full date, time with timezone, duration)
+- [ ] Display venue information (name, full address, capacity)
+- [ ] Embed interactive map showing venue location with marker (Leaflet/Mapbox/Google Maps)
+- [ ] Add "Get Directions" button linking to Google Maps
+- [ ] Display pricing information (price range, "Free" badge, ticket link)
+- [ ] Show full event description with formatting
+- [ ] Add event category/genre tags
+- [ ] Display age restrictions and additional details
+- [ ] Show event organizer/artist information
+- [ ] Add social media links (if available)
+- [ ] Implement share functionality (copy link, social share)
+- [ ] Create "Add to Calendar" feature (.ics file download)
+- [ ] Build "Related Events" section at bottom (3-4 event cubes)
+- [ ] Add back button to return to grid
+- [ ] Implement sticky header with event title
+- [ ] Ensure responsive design for mobile/tablet
 
 **Test & Validate Phase 5:**
-- [ ] Click on an event card - should navigate to detail page
-- [ ] Verify all event info displays correctly (title, description, venue, time, price)
-- [ ] Check that venue map shows correct location with marker
-- [ ] Click directions link - should open Google Maps/navigation
-- [ ] Click share button - should copy link or open share dialog
-- [ ] Click "Add to Calendar" - should download .ics file or open calendar
-- [ ] Click ticket link - should open external ticketing site
-- [ ] Verify related events show similar events
-- [ ] Test on mobile - should be responsive and readable
+- [ ] Click on an event cube from grid - should navigate to detail page
+- [ ] Verify hero banner image displays full-width
+- [ ] Check all event info displays correctly (title, description, venue, time, price)
+- [ ] Verify embedded map shows correct venue location with marker
+- [ ] Click "Get Directions" - should open Google Maps with venue address
+- [ ] Test share button - should copy link or open share dialog
+- [ ] Click "Add to Calendar" - should download .ics file
+- [ ] Click ticket purchase link - should open external ticketing site
+- [ ] Verify related events show 3-4 similar events
+- [ ] Scroll down - sticky header should appear with event title
+- [ ] Click back button - should return to grid at same scroll position
+- [ ] Test on mobile - should be responsive and all elements readable
+- [ ] Test on tablet - layout should adjust appropriately
 - [ ] Fix any errors before proceeding to Phase 6
 
 ### Phase 6: User Features (Optional Enhancement)
@@ -338,9 +541,13 @@ A location-based event discovery application that helps users find local events 
 
 ### Useful Libraries
 - `axios` or `fetch` for API calls
-- `react-map-gl` or `leaflet` for maps
+- `react-map-gl` or `leaflet` for maps (event detail pages only)
 - `date-fns` or `dayjs` for date handling
 - `haversine` for distance calculations
+- `react-infinite-scroll-component` or native Intersection Observer for infinite scroll
+- `framer-motion` or `react-spring` for smooth animations/transitions
+- `react-loading-skeleton` for skeleton loaders
+- `ics` library for "Add to Calendar" .ics file generation
 
 ## Launch Strategy & Cost Breakdown
 
