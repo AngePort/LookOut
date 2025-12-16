@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: local-event-finder-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: TICKETMASTER_API_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production

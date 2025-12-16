@@ -1,0 +1,17 @@
+{
+  "name": "local-event-finder",
+  "version": "1.0.0",
+  "description": "Discover local events near you",
+  "scripts": {
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build"
+  },
+  "keywords": ["events", "local", "finder", "ticketmaster"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
