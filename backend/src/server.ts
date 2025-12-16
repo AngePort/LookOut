@@ -1,9 +1,21 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import eventRoutes from './routes/eventRoutes';
 
-dotenv.config();
+// Load environment variables - try multiple paths
+const envPath = path.resolve(process.cwd(), '../.env');
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+  // Try current directory
+  dotenv.config();
+}
+
+console.log('Environment check:');
+console.log('- Ticketmaster API Key:', process.env.TICKETMASTER_API_KEY ? 'Loaded ✓' : 'Missing ✗');
+console.log('- Eventbrite API Key:', process.env.EVENTBRITE_API_KEY ? 'Loaded ✓' : 'Missing ✗');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
