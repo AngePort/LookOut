@@ -21,15 +21,24 @@ export interface Event {
   url?: string;
   category?: string;
   distance?: number;
+  imageUrl?: string;
+  title?: string;
+  classifications?: Array<{
+    segment?: {
+      name?: string;
+    };
+  }>;
 }
 
 export interface Venue {
   name: string;
-  address: string;
-  city: string;
+  address?: string;
+  city?: string;
   state?: string;
-  country: string;
-  location: Location;
+  country?: string;
+  latitude?: number;
+  longitude?: number;
+  location?: Location;
 }
 
 export interface Image {
@@ -42,7 +51,5 @@ export interface SearchFilters {
   location?: Location;
   radius: number;
   category?: string;
-  startDate?: string;
-  endDate?: string;
   keyword?: string;
 }

@@ -28,6 +28,10 @@ export interface NormalizedEvent {
     state?: string;
     latitude?: number;
     longitude?: number;
+    location?: {
+      lat: number;
+      lng: number;
+    };
   };
   category?: string;
   isFree: boolean;
@@ -46,6 +50,9 @@ function normalizeTicketmasterEvent(event: TicketmasterEvent): NormalizedEvent {
   const classification = event.classifications?.[0];
   const priceRange = event.priceRanges?.[0];
 
+  const latitude = venue?.location?.latitude ? parseFloat(venue.location.latitude) : undefined;
+  const longitude = venue?.location?.longitude ? parseFloat(venue.location.longitude) : undefined;
+
   return {
     id: `tm-${event.id}`,
     source: 'ticketmaster',
@@ -59,8 +66,12 @@ function normalizeTicketmasterEvent(event: TicketmasterEvent): NormalizedEvent {
       address: venue?.address?.line1,
       city: venue?.city?.name,
       state: venue?.state?.name,
-      latitude: venue?.location?.latitude ? parseFloat(venue.location.latitude) : undefined,
-      longitude: venue?.location?.longitude ? parseFloat(venue.location.longitude) : undefined,
+      latitude,
+      longitude,
+      location: latitude !== undefined && longitude !== undefined ? {
+        lat: latitude,
+        lng: longitude,
+      } : undefined,
     },
     category: classification?.segment?.name || classification?.genre?.name,
     isFree: priceRange ? priceRange.min === 0 : false,
@@ -78,6 +89,9 @@ function normalizeTicketmasterEvent(event: TicketmasterEvent): NormalizedEvent {
  * Normalize Eventbrite event to common format
  */
 function normalizeEventbriteEvent(event: EventbriteEvent): NormalizedEvent {
+  const latitude = event.venue?.address?.latitude ? parseFloat(event.venue.address.latitude) : undefined;
+  const longitude = event.venue?.address?.longitude ? parseFloat(event.venue.address.longitude) : undefined;
+
   return {
     id: `eb-${event.id}`,
     source: 'eventbrite',
@@ -92,8 +106,12 @@ function normalizeEventbriteEvent(event: EventbriteEvent): NormalizedEvent {
       address: event.venue?.address?.address_1,
       city: event.venue?.address?.city,
       state: event.venue?.address?.region,
-      latitude: event.venue?.address?.latitude ? parseFloat(event.venue.address.latitude) : undefined,
-      longitude: event.venue?.address?.longitude ? parseFloat(event.venue.address.longitude) : undefined,
+      latitude,
+      longitude,
+      location: latitude !== undefined && longitude !== undefined ? {
+        lat: latitude,
+        lng: longitude,
+      } : undefined,
     },
     category: event.category?.name || event.subcategory?.name,
     isFree: event.is_free,

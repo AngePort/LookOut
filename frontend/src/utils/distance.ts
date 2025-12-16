@@ -1,7 +1,7 @@
 import { Location } from '../types'
 
 export function calculateDistance(loc1: Location, loc2: Location): number {
-  const R = 6371
+  const R = 3959 // Earth's radius in miles
   const dLat = toRad(loc2.lat - loc1.lat)
   const dLon = toRad(loc2.lng - loc1.lng)
   const lat1 = toRad(loc1.lat)
@@ -20,9 +20,9 @@ function toRad(degrees: number): number {
   return degrees * (Math.PI / 180)
 }
 
-export function formatDistance(km: number): string {
-  if (km < 1) {
-    return `${Math.round(km * 1000)}m away`
+export function formatDistance(miles: number): string {
+  if (miles < 0.1) {
+    return `${Math.round(miles * 5280)}ft away`
   }
-  return `${km.toFixed(1)}km away`
+  return `${miles.toFixed(1)} miles away`
 }

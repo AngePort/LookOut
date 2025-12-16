@@ -18,7 +18,7 @@ console.log('- Ticketmaster API Key:', process.env.TICKETMASTER_API_KEY ? 'Loade
 console.log('- Eventbrite API Key:', process.env.EVENTBRITE_API_KEY ? 'Loaded ✓' : 'Missing ✗');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 3001; // Fixed port for consistency
 
 app.use(cors());
 app.use(express.json());
@@ -35,9 +35,9 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
+app.listen(PORT, '127.0.0.1', () => {
+  console.log(`Server is running on http://127.0.0.1:${PORT}`);
+  console.log(`Health check: http://127.0.0.1:${PORT}/health`);
 });
 
 export default app;

@@ -6,7 +6,14 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 export const api = {
   searchEvents: async (filters: SearchFilters): Promise<Event[]> => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/events/search`, filters)
+      const requestBody = {
+        latitude: filters.location?.lat,
+        longitude: filters.location?.lng,
+        radius: filters.radius,
+        category: filters.category,
+        keyword: filters.keyword,
+      }
+      const response = await axios.post(`${API_BASE_URL}/events/search`, requestBody)
       return response.data.events || []
     } catch (error) {
       console.error('Error searching events:', error)
